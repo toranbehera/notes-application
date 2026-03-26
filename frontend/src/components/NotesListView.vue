@@ -3,45 +3,67 @@ import { computed, ref } from 'vue'
 import NoteCard from './NoteCard.vue';
 
 const noteTitle = ref('');
-const noteDate = ref('');
+const noteDate = ref();
+
 const searchQuery = ref('');
+const sortOrder = ref('asc');
 
 const list = ref([
-  {id: 1, title: 'Walk the dog', date: '02/12/26'},
-  {id: 2, title: 'Water the plants', date: '01/07/26'},
-  {id: 3, title: 'Get groceries', date: '02/15/26'}
+  {id: 1, title: 'Walk the dog', date: new Date('2026-02-12')},
+  {id: 2, title: 'Water the plants', date: new Date('2026-01-07')},
+  {id: 3, title: 'Get groceries', date: new Date('2026-02-15')}
 ]);
 
+const filteredList = computed(() => {
+  const query = searchQuery.value.toLowerCase()
+
+  return list.value
+    .filter(note => note.title.toLowerCase().includes(query))
+    .sort((a, b) =>
+      sortOrder.value === 'asc'
+        ? a.date.getTime() - b.date.getTime()
+        : b.date.getTime() - a.date.getTime()
+    )
+})
+
 function addNote(){
-  list.value.push({id: Math.floor(Math.random() * 10), title: noteTitle.value, date: noteDate.value})
+  list.value.push({id: Math.floor(Math.random() * 10), title: noteTitle.value, date: new Date()})
 }
 
-const filteredList = computed(() => 
-  list.value.filter(note => 
-    note.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
-)
+function toggleSorting() {
+  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+}
 
 </script>
 
 <template>
   <div class="mx-auto space-y-10 text-center">
     
-    <div class="bg-white flex flex-col gap-5 fixed top-0 w-100 pt-1">
+    <div class="bg-white flex flex-col gap-5 fixed top-0 w-100 py-2">
       <h1 class="text-xl font-bold">Lotion</h1>
 
-      <div class="flex">
+      <div class="flex gap-1">
         <input type="text" placeholder="search" class="border-1 w-full p-1 rounded-xl" v-model="searchQuery">
+        
+        <button class="bg-black text-white p-2 rounded-xl"  @click="toggleSorting">
+          <svg v-if="sortOrder === 'asc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+          </svg>
+          
+          <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+          </svg>
+        </button>
       </div>
     </div>
 
     <div class="space-y-5 mt-20">
      <NoteCard
         v-for="note in filteredList"
-        :key="note.id"
+        :key="note.date.getTime()"
         :id="note.id"
         :title="note.title"
-        :date="note.date"
+        :date="note.date.toLocaleDateString('en-gb')"
       /> 
     </div>
     
