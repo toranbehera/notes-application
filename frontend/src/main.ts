@@ -1,10 +1,13 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
 import { createWebHistory, createRouter } from 'vue-router'
 
 import NotesListView from './components/NotesListView.vue'
 import Note from './components/Note.vue'
+
+const pinia = createPinia();
 
 const routes = [
     { path: '/', component: NotesListView },
@@ -16,4 +19,4 @@ export const router = createRouter({
     routes,
 })
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(pinia).use(router).mount('#app')
