@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import HelloWorld from './components/NotesList.vue'
+  import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <HelloWorld />
+  <main class="flex flex-col mx-auto gap-3 p-10">
+    <RouterView />
+  </main>
+  
 </template>
