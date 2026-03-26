@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <main class="flex flex-col mx-auto gap-3 p-10">
+  <main class="bg-white flex flex-col mx-auto gap-3 p-5">
     <RouterView />
   </main>
   

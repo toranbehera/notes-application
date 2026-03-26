@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import NoteCard from './NoteCard.vue';
 
 const noteTitle = ref('');
 const noteDate = ref('');
+const searchQuery = ref('');
 
 const list = ref([
   {id: 1, title: 'Walk the dog', date: '02/12/26'},
@@ -15,18 +16,28 @@ function addNote(){
   list.value.push({id: Math.floor(Math.random() * 10), title: noteTitle.value, date: noteDate.value})
 }
 
-// function removeNote(){
-// }
+const filteredList = computed(() => 
+  list.value.filter(note => 
+    note.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+)
 
 </script>
 
 <template>
   <div class="mx-auto space-y-10 text-center">
-    <h1 class="text-xl font-bold">Lotion</h1>
+    
+    <div class="bg-white flex flex-col gap-5 fixed top-0 w-100 pt-1">
+      <h1 class="text-xl font-bold">Lotion</h1>
 
-    <div class="space-y-5">
+      <div class="flex">
+        <input type="text" placeholder="search" class="border-1 w-full p-1 rounded-xl" v-model="searchQuery">
+      </div>
+    </div>
+
+    <div class="space-y-5 mt-20">
      <NoteCard
-        v-for="note in list"
+        v-for="note in filteredList"
         :key="note.id"
         :id="note.id"
         :title="note.title"
@@ -34,8 +45,8 @@ function addNote(){
       /> 
     </div>
     
-    <div class="bg-white p-3 sticky bottom-5">
-      <div class="border-1 p-3 flex flex-col gap-3 w-70 mx-auto">
+    <div class="bg-white p-3 sticky bottom-5 w-100">
+      <div class="border-1 p-3 flex flex-col gap-3">
         <label for="title">Title</label>
         <input v-model="noteTitle" type="text" id="title" class="border">
 
