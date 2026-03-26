@@ -24,25 +24,30 @@ function addNote(){
   <div class="mx-auto space-y-10 text-center">
     <h1 class="text-xl font-bold">Lotion</h1>
 
-    <NoteCard
-      v-for="note in list"
-      :key="note.id"
-      :id="note.id"
-      :title="note.title"
-      :date="note.date"
-    />
-
-    <div class="border-1 p-3 flex flex-col gap-3 w-70 mx-auto">
-      <label for="title">Title</label>
-      <input v-model="noteTitle" type="text" id="title" class="border">
-
-      <label for="date">Date</label>
-      <input v-model="noteDate" type="text" id="date" class="border">
-
-      <label for="content">Content</label>
-      <textarea name="content" id="content" class="border"></textarea>
-      
-      <button @click="addNote" class="bg-blue-400 p-1 w-30 mx-auto text-white rounded-md">Add to list</button>
+    <div class="space-y-5">
+     <NoteCard
+        v-for="note in list"
+        :key="note.id"
+        :id="note.id"
+        :title="note.title"
+        :date="note.date"
+      /> 
     </div>
+    
+    <div class="bg-white p-3 sticky bottom-5">
+      <div class="border-1 p-3 flex flex-col gap-3 w-70 mx-auto">
+        <label for="title">Title</label>
+        <input v-model="noteTitle" type="text" id="title" class="border">
+
+        <label for="date">Date</label>
+        <input v-model="noteDate" type="text" id="date" class="border">
+
+        <label for="content">Content</label>
+        <textarea name="content" id="content" class="border"></textarea>
+        
+        <button @click="addNote" class="bg-blue-400 p-1 w-30 mx-auto text-white rounded-md">Add to list</button>
+      </div> 
+    </div>
+    
   </div>
 </template>
