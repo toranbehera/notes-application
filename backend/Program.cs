@@ -23,7 +23,10 @@ builder.Services.AddOpenApiDocument(config =>
 });
 
 var app = builder.Build();
+
 app.UseCors("AllowFrontend");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
 
 if (app.Environment.IsDevelopment())
 {
