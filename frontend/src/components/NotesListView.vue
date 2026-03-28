@@ -1,43 +1,91 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import NoteCard from './NoteCard.vue';
 import { useThemeStore } from '../store';
+import axios from 'axios';
+
+type Note = {
+  id: number,
+  title: string,
+  content?: string,
+  createdAt: string, 
+  updatedAt?: string
+}
+
+const url = 'http://localhost:5184/notes';
+
+const list = ref<Note[]>([]);
+
+const loadingNotes = ref(true);
+const isSubmitting = ref(false);
+
+async function fetchNotes(){
+  try{
+    const res = await axios.get(url);
+    list.value = res.data;
+  } catch(err){
+    console.error(err);
+  } finally {
+    loadingNotes.value = false;
+  }
+}
 
 const theme = useThemeStore();
 
 const noteTitle = ref('');
+const noteContent = ref('');
 
 const searchQuery = ref('');
 const sortOrder = ref('asc');
-
-const list = ref([
-  {id: 1, title: 'Walk the dog', date: new Date('2026-02-12')},
-  {id: 2, title: 'Water the plants', date: new Date('2026-01-07')},
-  {id: 3, title: 'Get groceries', date: new Date('2026-02-15')}
-]);
 
 const filteredList = computed(() => {
   const query = searchQuery.value.toLowerCase()
 
   return list.value
     .filter(note => note.title.toLowerCase().includes(query))
-    .sort((a, b) =>
-      sortOrder.value === 'asc'
-        ? a.date.getTime() - b.date.getTime()
-        : b.date.getTime() - a.date.getTime()
-    )
+    .sort((a, b) => {
+      const dateA = new Date(a.updatedAt || a.createdAt).getTime();
+      const dateB = new Date(b.updatedAt || b.createdAt).getTime();
+
+      return sortOrder.value === 'asc'? dateB - dateA : dateA - dateB;
+    })
 })
 
-function addNote(){
-  list.value.push({id: Math.floor(Math.random() * 10), title: noteTitle.value, date: new Date()})
+async function addNote(){
+  if(!noteTitle.value.trim()) return;
+  
+  isSubmitting.value = true; 
+
+  try{
+  const note = {
+    title: noteTitle.value,
+    content: noteContent.value
+  }
+
+  await axios.post(url, note);
+
+  noteTitle.value = '';
+  noteContent.value = '';
+
+  await fetchNotes();
+  } catch(err) {
+  console.error(err);
+  } finally{
+    isSubmitting.value = false; 
+  }
 }
 
 function toggleSorting() {
   sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
 }
+
+onMounted(() => {
+  fetchNotes();
+})
 </script>
 
 <template>
+  <!-- title and color theme icon -->
   <div class="mx-auto min-h-screen dark:bg-gray-800">
     <div class="bg-white flex flex-col gap-5 sticky top-0 w-100 py-2 dark:bg-gray-800 dark:text-white">
       <div class="flex justify-between">
@@ -49,7 +97,10 @@ function toggleSorting() {
           </svg>
         </button>
       </div>
-      
+
+      <p class="text-center italic brightness-70">Like Notion, but lighter</p>
+
+      <!-- search bar -->
       <div class="flex gap-1">
         <input type="text" placeholder="search" class="border-1 w-full p-1 rounded-xl" v-model="searchQuery">
         
@@ -62,26 +113,38 @@ function toggleSorting() {
       </div>
     </div>
 
+    <!-- notes list -->
     <div class="space-y-5 mt-5">
+      <p v-if="loadingNotes" class="text-center">Loading...</p>
       <NoteCard
+        v-else
         v-for="note in filteredList"
-        :key="note.date.getTime()"
+        :key="note.id"
         :id="note.id"
         :title="note.title"
-        :date="note.date.toLocaleDateString('en-gb')"
+        :date="new Date(note.createdAt).toLocaleDateString('en-GB')"
+        @deleted="id => list = list.filter(n => n.id !== id)"
       /> 
     </div>
    </div>
     
-    <div class="flex justify-center bg-white p-3 bottom-0 sticky w-110 dark:bg-gray-800 mx-auto xl:top-0 xl:fixed xl:right-0 xl:h-max">
+   <!-- notes submission form -->
+    <form 
+      class="flex justify-center bg-white p-3 bottom-0 sticky w-110 dark:bg-gray-800 mx-auto xl:top-0 xl:fixed xl:right-0 xl:h-max"
+      @submit.prevent="addNote"
+    >
       <div class="border-1 p-3 w-80 flex flex-col gap-3">
         <label for="title">Title</label>
         <input v-model="noteTitle" type="text" id="title" class="border">
+        <p v-if="!noteTitle" class="text-red-500 dark:text-red-200 text-sm">Title cannot be empty</p>
 
         <label for="content">Content</label>
-        <textarea name="content" id="content" class="border"></textarea>
+        <textarea v-model="noteContent" name="content" id="content" class="border field-sizing-content min-h-20 max-h-30"></textarea>
         
-        <button @click="addNote" class="bg-blue-400 p-1 w-30 mx-auto text-white rounded-md dark:bg-gray-600">Add to list</button>
+        <button type="submit" :disabled="isSubmitting" class="bg-blue-400 disabled:brightness-70 p-1 w-30 mx-auto text-white rounded-md dark:bg-gray-600">
+          <p v-if="isSubmitting">Submitting...</p>
+          <p v-else>Add Note</p>
+        </button>
       </div> 
-    </div>
+    </form>
 </template>
