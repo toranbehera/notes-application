@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 const props = defineProps(['id', 'title', 'date']);
 
-const url = 'http://localhost:5184/notes';
+const url = 'https://notes-application-production.up.railway.app/notes';
 
 const isDeleting = ref(false);
 

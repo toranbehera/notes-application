@@ -18,7 +18,7 @@ type Note = {
   updatedAt?: string
 }
 
-const url = 'http://localhost:5184/notes';
+const url = 'https://notes-application-production.up.railway.app/notes';
 
 const note = ref<Note>();
 
