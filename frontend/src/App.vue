@@ -6,8 +6,7 @@ const theme = useThemeStore();
 </script>
 
 <template>
-  <main :class="`bg-white flex flex-col mx-auto gap-3 p-5 dark:bg-gray-800 dark:text-white ${theme.isDark ? 'dark' : ''}`">
+  <main :class="`flex flex-col min-h-screen dark:text-white ${theme.isDark ? 'dark' : ''} dark:bg-gray-800`">
     <RouterView />
   </main>
-  
 </template>

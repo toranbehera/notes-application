@@ -27,7 +27,7 @@ async function deleteNote(){
 </script>
 
 <template>
-    <div :class="`flex gap-3 ${isDeleting && 'brightness-70'} justify-between p-3 rounded-xl border-1 bg-yellow-100 w-100 mx-auto dark:text-gray-200 dark:bg-blue-950 dark:border-gray-600`">
+    <div :class="`flex gap-3 ${isDeleting && 'brightness-70'} justify-between p-3 rounded-xl border-1 bg-yellow-100 min-w-80 mx-auto dark:text-gray-200 dark:bg-blue-950 dark:border-gray-600`">
         <RouterLink :to="`/notes/${id}`" class="flex flex-1 justify-between">
             <h2>{{ title }}</h2>
             <p>{{ date }}</p>   

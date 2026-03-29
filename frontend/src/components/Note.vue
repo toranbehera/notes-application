@@ -23,7 +23,7 @@ const url = 'https://notes-application-production.up.railway.app/notes';
 const note = ref<Note>();
 
 const loadingNote = ref(true);
-const isSubmitting = ref(false);
+const isSaving = ref(false);
 
 const newTitle = ref('');
 const newContent = ref('');
@@ -31,7 +31,7 @@ const newContent = ref('');
 async function updateNote() {
     if(!newTitle.value && !newContent.value) return;
 
-    isSubmitting.value = true;
+    isSaving.value = true;
 
     try {
         const payload = {
@@ -47,7 +47,7 @@ async function updateNote() {
     } catch (err) {
         console.error(err);
     } finally{
-        isSubmitting.value = false;
+        isSaving.value = false;
     }
 }
 
@@ -101,8 +101,8 @@ onMounted(async () => {
 
                 <textarea v-model="newContent" class="border-1 w-full field-sizing-content min-h-40 max-h-130"></textarea>
 
-                <button type="submit" :disabled="isSubmitting" class="bg-green-700 disabled:brightness-70 text-white p-2 rounded-md">
-                    <p v-if="isSubmitting">Submitting...</p>
+                <button type="submit" :disabled="isSaving" class="bg-green-700 disabled:brightness-70 text-white p-2 rounded-md">
+                    <p v-if="isSaving">Saving...</p>
                     <p v-else>Save changes</p>
                 </button> 
             </form>
